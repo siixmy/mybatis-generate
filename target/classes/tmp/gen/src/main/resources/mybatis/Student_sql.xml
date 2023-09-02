@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+IStudentDao mybatis
+
+@author sijie
+@date 2023/09/02 13:21
+@version 0.0.1
+-->
+<mapper namespace="com.springboot.test.dao.IStudentDao" >
+    <resultMap id="StudentMap" type="com.springboot.test.pojo.Student">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.springboot.test.pojo.Student">
+            <selectKey keyProperty="id" resultType="Integer" order="AFTER">
+                SELECT LAST_INSERT_ID() AS id
+            </selectKey>
+        INSERT INTO student (
+        <trim suffixOverrides=",">
+                id,
+                <if test="name != null">name,</if>
+                <if test="age != null">age,</if>
+        </trim>
+        )VALUES(
+        <trim suffixOverrides=",">
+                    #{id},
+                    <if test="name != null"> #{name},</if>
+                    <if test="age != null"> #{age},</if>
+        </trim>
+        )
+    </insert>
+
+    <update id="updateByPk" parameterType="com.springboot.test.pojo.Student">
+        update student
+        <trim prefix="SET" suffixOverrides=",">
+                <if test="name != null">name = #{name},</if>
+                <if test="age != null">age = #{age},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from student where id = #{key}
+    </delete>
+
+    <select id="getOneByPrimaryKey" parameterType="java.lang.Long" resultMap="StudentMap">
+        select * from student where id = #{key}
+    </select>
+
+    <select id="queryListByKeys" resultMap="StudentMap">
+        <if test="keys!=null and keys.size>0">
+            SELECT * FROM student WHERE id IN
+            <foreach item="id" index="index" collection="keys" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+    <delete id="deleteByKeys">
+        <if test="keys!=null and keys.size>0">
+            DELETE FROM student WHERE id IN
+            <foreach item="id" index="index" collection="keys" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </delete>
+
+    <insert id="insertBatch">
+        <if test="list!=null and list.size>0">
+            INSERT INTO student
+            <trim suffixOverrides="," prefix="(" suffix=") VALUES">
+                id,
+                name,
+                age,
+            </trim>
+        <foreach collection="list" item="v" index="index" separator=",">
+            <trim suffixOverrides="," prefix="(" suffix=")">
+                #{v.id},
+                #{v.name},
+                #{v.age},
+            </trim>
+        </foreach>
+        </if>
+    </insert>
+
+    <select id="getAllItemsByQueryObject" resultMap="StudentMap">
+        select * from student
+        <trim prefix="where" prefixOverrides="AND|OR">
+            <if test="qo.id != null">AND id = #{qo.id}</if>
+            <if test="qo.name != null">AND name = #{qo.name}</if>
+            <if test="qo.age != null">AND age = #{qo.age}</if>
+        </trim>
+        <if test="qo.orderBy != null">order by ${qo.orderBy}</if>
+    </select>
+</mapper>

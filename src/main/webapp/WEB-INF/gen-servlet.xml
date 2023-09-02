@@ -1,0 +1,45 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+  <context:component-scan base-package="com.tc.gen"/>
+
+  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/pages/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+  <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+  <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    <property name="messageConverters">
+      <list>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+          <property name="supportedMediaTypes">
+            <list>
+              <value>text/plain;charset=UTF-8</value>
+            </list>
+          </property>
+        </bean>
+        <!--action 返回json自动转换-->
+        <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+      </list>
+    </property>
+    <!--请求入参处理-->
+    <property name="webBindingInitializer">
+      <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+        <property name="propertyEditorRegistrars">
+          <array>
+            <bean class="com.tc.gen.util.CustomPropertyEditorRegistrar"/>
+          </array>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+</beans>

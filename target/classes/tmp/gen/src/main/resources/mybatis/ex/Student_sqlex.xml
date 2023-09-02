@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+IStudentDao mybatis ex
+
+@author sijie
+@date 2023/09/02 13:21
+@version 0.0.1
+-->
+<mapper namespace="com.springboot.test.dao.IStudentDao" >
+    <select id="getListByCriteria" resultMap="StudentMap">
+        select * from student
+        <include refid="page_where_clause"/>
+        <if test="qo.orderBy != null">order by ${qo.orderBy}</if>
+        <if test="pageSize != null and offSet != null">
+            LIMIT #{pageSize} OFFSET #{offSet}
+        </if>
+    </select>
+
+    <select id="countByCriteria" resultType="int">
+        select count(1) from student
+        <include refid="page_where_clause"/>
+    </select>
+
+    <sql id="page_where_clause">
+        <trim prefix="where" prefixOverrides="AND|OR">
+            <if test="qo.id != null">AND id = #{qo.id}</if>
+            <if test="qo.name != null">AND name = #{qo.name}</if>
+            <if test="qo.age != null">AND age = #{qo.age}</if>
+
+            <!-- otherParameters -->
+            <if test="qp != null">
+                <!--your script-->
+            </if>
+        </trim>
+    </sql>
+
+
+    <!--extension script-->
+
+</mapper>
